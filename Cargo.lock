@@ -642,16 +642,12 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "color-eyre",
- "http-body-util",
- "hyper",
- "hyper-util",
  "nophp_derive",
  "pyo3",
  "pythonize",
  "reqwest",
  "serde",
  "serde_json",
- "tokio",
 ]
 
 [[package]]
@@ -1073,6 +1069,16 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "server"
+version = "0.1.0"
+dependencies = [
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "tokio",
 ]
 
 [[package]]

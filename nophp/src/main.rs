@@ -13,7 +13,7 @@ use lexer::lex;
 fn main() -> Result<()> {
     color_eyre::install().unwrap();
 
-    let ast = lex(include_str!("../nophp.php")).unwrap();
+    let ast = lex(include_str!("../../nophp.php")).unwrap();
 
     let mut compiler = Compiler::new();
 
