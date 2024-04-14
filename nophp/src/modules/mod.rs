@@ -2,8 +2,6 @@ mod concat;
 mod resolut;
 
 use std::fmt::Display;
-use std::fs;
-use std::io::Write;
 
 pub use concat::*;
 pub use nophp_derive::Module;
@@ -135,13 +133,13 @@ impl ModuleImpl for FunctionCall {
         let binding = compiler.eval();
         let out = binding.get(0).unwrap();
 
-        let mut file = fs::OpenOptions::new()
-            .append(true)
-            .create(true)
-            .open("testout.txt")
-            .expect("Could not create an output buffer");
-
-        write!(file, "{out}").unwrap();
+        // let mut file = fs::OpenOptions::new()
+        //     .append(true)
+        //     .create(true)
+        //     .open("testout.txt")
+        //     .expect("Could not create an output buffer");
+        //
+        // write!(file, "{out}").unwrap();
 
         buffer.push_str(&out.to_string());
     }
