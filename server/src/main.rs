@@ -47,13 +47,16 @@ async fn handler(
 #[derive(Parser, Debug)]
 struct Args {
     #[arg(short, long, default_value = "./app")]
-    path: String,
+    dir: String,
+    #[arg(short, long, default_value_t = 3000)]
+    port: u16,
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let path = Args::parse().path;
-    let path = PathBuf::from(path);
+    let args = Args::parse();
+
+    let path = PathBuf::from(args.dir);
 
     if !path.is_dir() {
         return Err("Provide path is not a valid dir".into());
@@ -89,7 +92,7 @@ async fn main() -> Result<()> {
     // use reference counting
     let files_map = Arc::new(files_map);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await?;
 
     println!("Listening on {}", addr);
