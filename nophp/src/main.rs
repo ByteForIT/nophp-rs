@@ -8,12 +8,12 @@ mod test;
 
 use crate::prelude::*;
 use compiler::Compiler;
-use lexer::lex;
+use lexer::lex_one;
 
 fn main() -> Result<()> {
     color_eyre::install().unwrap();
 
-    let ast = lex(include_str!("../../nophp.php")).unwrap();
+    let ast = lex_one(include_str!("../../nophp.php")).unwrap();
 
     let mut buffer = String::new();
     let mut compiler = Compiler::new(&mut buffer);
