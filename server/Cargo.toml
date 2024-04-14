@@ -8,3 +8,6 @@ hyper = { version = "1.2.0", features = ["full"] }
 hyper-util = { version = "0.1.3", features = ["full"] }
 http-body-util = "0.1.1"
 tokio = { version = "1.37.0", features = ["full"] }
+
+nophp = { path = "../nophp" }
+clap = { version = "4.5.4", features = ["derive"] }
