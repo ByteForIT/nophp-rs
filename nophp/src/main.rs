@@ -15,7 +15,8 @@ fn main() -> Result<()> {
 
     let ast = lex(include_str!("../../nophp.php")).unwrap();
 
-    let mut compiler = Compiler::new();
+    let mut buffer = String::new();
+    let mut compiler = Compiler::new(&mut buffer);
 
     let ast = ast
         .as_array()
@@ -23,6 +24,10 @@ fn main() -> Result<()> {
 
     compiler.execute(ast);
     compiler.run();
+
+    println!("==BUFSTR==");
+    print!("{}", compiler.get_buffer());
+    println!("==BUFEND==");
 
     Ok(())
 }

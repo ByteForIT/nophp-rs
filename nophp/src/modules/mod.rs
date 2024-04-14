@@ -34,9 +34,9 @@ impl Display for NpType {
 
 pub trait ModuleImpl {
     // TODO: Return Result
-    fn proc_tree(&self);
+    fn proc_tree(&self, buffer: &mut String);
 
-    fn eval(&self) -> Option<NpType> {
+    fn eval(&self, _buffer: &mut String) -> Option<NpType> {
         None
     }
 }
@@ -67,12 +67,12 @@ impl Php {
 }
 
 impl ModuleImpl for Php {
-    fn proc_tree(&self) {
+    fn proc_tree(&self, buffer: &mut String) {
         println!("[PHP] triggered SP (single page) build");
 
         let ast = &self.data;
 
-        let mut compiler = Compiler::new();
+        let mut compiler = Compiler::new(buffer);
 
         compiler.execute(ast);
         compiler.run();
@@ -120,10 +120,10 @@ impl FunctionCall {
 }
 
 impl ModuleImpl for FunctionCall {
-    fn proc_tree(&self) {
+    fn proc_tree(&self, buffer: &mut String) {
         let ast = &self.arguments;
 
-        let mut compiler = Compiler::new();
+        let mut compiler = Compiler::new(buffer);
 
         compiler.execute(ast);
 
@@ -142,5 +142,7 @@ impl ModuleImpl for FunctionCall {
             .expect("Could not create an output buffer");
 
         write!(file, "{out}").unwrap();
+
+        buffer.push_str(&out.to_string());
     }
 }

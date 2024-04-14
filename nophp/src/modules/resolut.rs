@@ -19,11 +19,11 @@ impl ResolutMod {
 }
 
 impl ModuleImpl for ResolutMod {
-    fn proc_tree(&self) {
+    fn proc_tree(&self, _buffer: &mut String) {
         println!("resolved type of {}", self.np_type);
     }
 
-    fn eval(&self) -> Option<NpType> {
+    fn eval(&self, _buffer: &mut String) -> Option<NpType> {
         return Some(self.np_type.clone());
     }
 }

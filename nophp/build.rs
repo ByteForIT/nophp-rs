@@ -8,7 +8,8 @@ fn get_file(url: &str, name: &str) {
 
 fn main() {
     let base = "https://raw.githubusercontent.com/ByteForIT/NoPHP";
-    let pin = "7db4209";
+    // let pin = "7db4209"; // main
+    let pin = "e962c0d"; // alpha-2.0
 
     let lexer = "lexer.py";
     let parser = "pparser.py";

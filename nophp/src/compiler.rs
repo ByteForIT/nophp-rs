@@ -6,14 +6,16 @@ use crate::prelude::*;
 struct ModuleList(Vec<Box<dyn Module>>);
 
 /// This is the interpreter
-pub struct Compiler {
+pub struct Compiler<'a> {
     modules: ModuleList,
+    buffer: &'a mut String,
 }
 
-impl Compiler {
-    pub fn new() -> Self {
+impl<'a> Compiler<'a> {
+    pub fn new(buffer: &'a mut String) -> Self {
         Self {
             modules: ModuleList(vec![]),
+            buffer,
         }
     }
 
@@ -26,21 +28,25 @@ impl Compiler {
         }
     }
 
-    pub fn run(&self) {
+    pub fn run(&mut self) {
         self.modules.0.iter().for_each(|module| {
-            module.proc_tree();
+            module.proc_tree(&mut self.buffer);
         });
     }
 
-    pub fn eval(&self) -> Vec<NpType> {
+    pub fn eval(&mut self) -> Vec<NpType> {
         let values: Vec<_> = self
             .modules
             .0
             .iter()
-            .filter_map(|module| module.eval())
+            .filter_map(|module| module.eval(&mut self.buffer))
             .collect();
 
         values
+    }
+
+    pub fn get_buffer(&self) -> String {
+        self.buffer.clone()
     }
 
     fn parse_module(&self, value: &Vec<Value>) -> Result<Box<dyn Module>> {
