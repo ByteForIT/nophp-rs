@@ -1,7 +1,9 @@
 <?php
 
-echo "Hi Mom!\n";
+$lang = 'PHP';
 
-echo "hello" . " stupid " . "world!" . "\n";
+echo 'Am I using php?\n';
+
+echo 'No... you are using '.$lang."\n";
 
 ?>
