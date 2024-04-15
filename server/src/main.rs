@@ -30,7 +30,8 @@ async fn handler(
     match ast {
         Some(ast) => {
             let mut buffer = String::new();
-            let mut compiler = Compiler::new(&mut buffer);
+            let mut scope_vars = HashMap::new();
+            let mut compiler = Compiler::new(&mut buffer, &mut scope_vars);
             let ast = ast.as_array().unwrap(); // FIXME
             compiler.execute(ast);
             compiler.run();

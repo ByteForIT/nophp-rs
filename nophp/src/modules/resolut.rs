@@ -13,17 +13,17 @@ impl ResolutMod {
             ("STRING", AstStr(value)) => Ok(Self {
                 np_type: NpType::String(value),
             }),
-            _ => Err("Invalid type reached".into()),
+            _ => Err(NoPhpError::Other("Invalid type reached")),
         }
     }
 }
 
 impl ModuleImpl for ResolutMod {
-    fn proc_tree(&self, _buffer: &mut String) {
+    fn proc_tree(&self, _buffer: &mut String, _scope: &mut ScopeBuffer) {
         println!("resolved type of {}", self.np_type);
     }
 
-    fn eval(&self, _buffer: &mut String) -> Option<NpType> {
+    fn eval(&self, _buffer: &mut String, _scope: &mut ScopeBuffer) -> Option<NpType> {
         return Some(self.np_type.clone());
     }
 }

@@ -12,21 +12,24 @@ impl ConcatMod {
 }
 
 impl ModuleImpl for ConcatMod {
-    fn proc_tree(&self, _buffer: &mut String) {
+    fn proc_tree(&self, _buffer: &mut String, _scope: &mut ScopeBuffer) {
         // does nothing ig
     }
 
-    fn eval(&self, buffer: &mut String) -> Option<NpType> {
+    fn eval(&self, buffer: &mut String, scope: &mut ScopeBuffer) -> Option<NpType> {
         let val = &self.data;
 
         match (val.get("0"), val.get("1")) {
             (Some(first), Some(second)) => {
-                let mut compiler = Compiler::new(buffer);
+                // TODO Make scopes slightly global
+                let mut scope_vars = scope.variables.clone();
+                let mut compiler = Compiler::new(buffer, &mut scope_vars);
                 compiler.execute(&vec![first.clone()]);
                 let eval = &compiler.eval();
                 let first = eval.get(0).unwrap();
 
-                let mut compiler = Compiler::new(buffer);
+                let mut scope_vars = scope.variables.clone();
+                let mut compiler = Compiler::new(buffer, &mut scope_vars);
                 compiler.execute(&vec![second.clone()]);
                 let eval = &compiler.eval();
                 let second = eval.get(0).unwrap();

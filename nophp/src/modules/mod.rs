@@ -1,22 +1,41 @@
 mod concat;
+mod identifier;
 mod resolut;
+mod variable;
 
 use std::fmt::Display;
 
-pub use concat::*;
 pub use nophp_derive::Module;
+
+pub use concat::*;
+pub use identifier::*;
 pub use resolut::*;
+pub use variable::*;
 
 use serde_json::{Map, Value};
 pub use Value::Object as AstMap;
 pub use Value::String as AstStr;
 
 use crate::compiler::Compiler;
-use crate::prelude::*;
+use crate::compiler::ScopeBuffer;
+pub use crate::prelude::*;
 
 #[derive(Debug, Clone)]
 pub enum NpType {
     String(String),
+    Null,
+}
+
+impl NpType {
+    pub fn try_new(var_type: &String, var_value: &Value) -> Result<Self> {
+        match var_type.as_str() {
+            "STRING" => {
+                let value = var_value.as_str().ok_or(NoPhpError::ValueParseError)?;
+                Ok(Self::String(value.into()))
+            }
+            _ => todo!("Type {var_type} is not yet implimented"),
+        }
+    }
 }
 
 impl Display for NpType {
@@ -26,15 +45,16 @@ impl Display for NpType {
                 let value = value.replace("\\n", "\n");
                 write!(f, "{value}")
             }
+            Self::Null => write!(f, "null"),
         }
     }
 }
 
 pub trait ModuleImpl {
     // TODO: Return Result
-    fn proc_tree(&self, buffer: &mut String);
+    fn proc_tree(&self, buffer: &mut String, scope: &mut ScopeBuffer);
 
-    fn eval(&self, _buffer: &mut String) -> Option<NpType> {
+    fn eval(&self, _buffer: &mut String, _scope: &mut ScopeBuffer) -> Option<NpType> {
         None
     }
 }
@@ -65,12 +85,13 @@ impl Php {
 }
 
 impl ModuleImpl for Php {
-    fn proc_tree(&self, buffer: &mut String) {
+    fn proc_tree(&self, buffer: &mut String, scope: &mut ScopeBuffer) {
         println!("[PHP] triggered SP (single page) build");
 
         let ast = &self.data;
 
-        let mut compiler = Compiler::new(buffer);
+        let mut scope_vars = &mut scope.variables;
+        let mut compiler = Compiler::new(buffer, &mut scope_vars);
 
         compiler.execute(ast);
         compiler.run();
@@ -118,10 +139,11 @@ impl FunctionCall {
 }
 
 impl ModuleImpl for FunctionCall {
-    fn proc_tree(&self, buffer: &mut String) {
+    fn proc_tree(&self, buffer: &mut String, scope: &mut ScopeBuffer) {
         let ast = &self.arguments;
 
-        let mut compiler = Compiler::new(buffer);
+        let mut scope_vars = &mut scope.variables;
+        let mut compiler = Compiler::new(buffer, &mut scope_vars);
 
         compiler.execute(ast);
 

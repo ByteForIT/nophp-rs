@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde_json::Value;
 
 use crate::modules::*;
@@ -5,17 +7,35 @@ use crate::prelude::*;
 
 struct ModuleList(Vec<Box<dyn Module>>);
 
-/// This is the interpreter
-pub struct Compiler<'a> {
-    modules: ModuleList,
-    buffer: &'a mut String,
+pub struct ScopeBuffer<'b> {
+    pub variables: &'b mut HashMap<String, NpType>,
 }
 
-impl<'a> Compiler<'a> {
-    pub fn new(buffer: &'a mut String) -> Self {
+impl<'b> ScopeBuffer<'b> {
+    pub fn new(variables: &'b mut HashMap<String, NpType>) -> Self {
+        Self { variables }
+    }
+}
+
+/// This is the interpreter
+/// And also the scope
+pub struct Compiler<'a, 'b> {
+    modules: ModuleList,
+    buffer: &'a mut String,
+    scope: ScopeBuffer<'b>,
+}
+
+// Lifetimes (gasp) (?!?!)
+// 'a is for the first call to the Compiler
+// 'b is for the call to the constructor of
+// the current Compiler/scope
+impl<'a, 'b> Compiler<'a, 'b> {
+    pub fn new(buffer: &'a mut String, variables: &'b mut HashMap<String, NpType>) -> Self {
+        let scope = ScopeBuffer::new(variables);
         Self {
             modules: ModuleList(vec![]),
             buffer,
+            scope,
         }
     }
 
@@ -30,7 +50,7 @@ impl<'a> Compiler<'a> {
 
     pub fn run(&mut self) {
         self.modules.0.iter().for_each(|module| {
-            module.proc_tree(&mut self.buffer);
+            module.proc_tree(&mut self.buffer, &mut self.scope);
         });
     }
 
@@ -39,7 +59,7 @@ impl<'a> Compiler<'a> {
             .modules
             .0
             .iter()
-            .filter_map(|module| module.eval(&mut self.buffer))
+            .filter_map(|module| module.eval(&mut self.buffer, &mut self.scope))
             .collect();
 
         values
@@ -55,11 +75,14 @@ impl<'a> Compiler<'a> {
                 "PHP" => Ok(Box::new(Php::try_new(value.clone())?)),
                 "FUNCTION_CALL" => Ok(Box::new(FunctionCall::try_new(value.clone())?)),
                 "CONCAT" => Ok(Box::new(ConcatMod::try_new(value.clone())?)),
-                "VARIABLE_ASSIGNMENT" => todo!("The module for VARIABLE_ASSIGNMENT is not implimented"),
+                "VARIABLE_ASSIGNMENT" => Ok(Box::new(VariableAssignment::try_new(value.clone())?)),
+                // Identifiers (for variables for example)
+                "ID" => Ok(Box::new(Identifier::try_new(value.clone())?)),
+                // NoPHP Types
                 "STRING" => Ok(Box::new(ResolutMod::try_new(id, value.clone())?)),
                 id => unimplemented!("The module for {id} is not implimented"),
             },
-            _ => Err("Malformed AST".into()),
+            _ => Err(NoPhpError::MalformedAST),
         }
     }
 

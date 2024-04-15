@@ -6,6 +6,8 @@ mod prelude;
 #[cfg(test)]
 mod test;
 
+use std::collections::HashMap;
+
 use crate::prelude::*;
 use compiler::Compiler;
 use lexer::lex_one;
@@ -16,7 +18,8 @@ fn main() -> Result<()> {
     let ast = lex_one(include_str!("../../nophp.php")).unwrap();
 
     let mut buffer = String::new();
-    let mut compiler = Compiler::new(&mut buffer);
+    let mut scope_vars = HashMap::new();
+    let mut compiler = Compiler::new(&mut buffer, &mut scope_vars);
 
     let ast = ast
         .as_array()

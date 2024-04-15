@@ -5,6 +5,7 @@ use pyo3::prelude::*;
 use pythonize::depythonize_bound;
 use serde_json::Value;
 
+#[allow(unused)]
 pub type Project = HashMap<String, Value>;
 
 const LEXER: &str = c!(
@@ -26,6 +27,7 @@ pub fn lex_one(file: &str) -> Result<Value> {
     Ok(ast)
 }
 
+#[allow(unused)]
 pub fn lex_many(files: &Vec<String>) -> Result<Vec<Value>> {
     let ast = Python::with_gil(|py| -> PyResult<Vec<Value>> {
         let (lexer, parser) = get_funcs(py)?;
