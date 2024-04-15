@@ -22,13 +22,13 @@ impl ModuleImpl for ConcatMod {
         match (val.get("0"), val.get("1")) {
             (Some(first), Some(second)) => {
                 // TODO Make scopes slightly global
-                let mut scope_vars = scope.variables.clone();
+                let mut scope_vars = &mut scope.variables;
                 let mut compiler = Compiler::new(buffer, &mut scope_vars);
                 compiler.execute(&vec![first.clone()]);
                 let eval = &compiler.eval();
                 let first = eval.get(0).unwrap();
 
-                let mut scope_vars = scope.variables.clone();
+                let mut scope_vars = &mut scope.variables;
                 let mut compiler = Compiler::new(buffer, &mut scope_vars);
                 compiler.execute(&vec![second.clone()]);
                 let eval = &compiler.eval();
