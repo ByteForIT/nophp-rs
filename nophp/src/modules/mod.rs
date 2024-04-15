@@ -24,7 +24,7 @@ use crate::compiler::Compiler;
 use crate::compiler::ScopeBuffer;
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum NpType {
     String(String),
     Number(i64),

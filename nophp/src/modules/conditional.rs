@@ -1,22 +1,31 @@
-use std::{collections::HashMap, fmt::write};
+use std::collections::HashMap;
 
 use super::*;
 
 enum EqualityOp {
-    EqEq,
+    EqEq, // Works
+    NotEqEq, // Works
+    Gt, // Works
+    Lt, // Broken, same for Ge, Le and Eee is not implimented
 }
 
 impl EqualityOp {
     pub fn try_new(value: &str) -> Result<Self> {
         match value {
             "EQEQ" => Ok(Self::EqEq),
+            "NOT_EQEQ" => Ok(Self::NotEqEq),
+            "GREATER" => Ok(Self::Gt),
+            "LESSER" => Ok(Self::Lt),
             _ => Err(NoPhpError::InvalidEqOp(value.to_string())),
         }
     }
 
-    pub fn compare<T: PartialEq>(&self, left: T, right: T) -> bool {
+    pub fn compare<T: PartialEq + PartialOrd>(&self, left: T, right: T) -> bool {
         match self {
             Self::EqEq => left == right,
+            Self::NotEqEq => left != right,
+            Self::Gt => left > right,
+            Self::Lt => left < right,
         }
     }
 }
@@ -90,13 +99,15 @@ impl ModuleImpl for Conditional {
         match (lhs, rhs) {
             (Some(lhs), Some(rhs)) => {
                 let eq = self.op.compare(lhs, rhs);
-                println!("Eq: {eq}");
 
-                let mut scope_vars = &mut scope.variables;
-                let mut compiler = Compiler::new(buffer, &mut scope_vars);
+                if eq {
+                    let mut scope_vars = &mut scope.variables;
+                    let mut compiler = Compiler::new(buffer, &mut scope_vars);
 
-                compiler.execute(&self.code);
-                compiler.run();
+                    compiler.execute(&self.code);
+                    compiler.run();
+                }
+
             }
             _ => {}
         };
