@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::error::Error;
 use std::fs;
 use std::net::SocketAddr;
 use std::path::PathBuf;
@@ -14,7 +15,6 @@ use nophp::lexer::{lex_many, Project};
 use tokio::net::TcpListener;
 
 use nophp::compiler::Compiler;
-use nophp::prelude::*;
 
 async fn handler(
     req: Request<hyper::body::Incoming>,
@@ -54,7 +54,7 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 
     let path = PathBuf::from(args.dir);
