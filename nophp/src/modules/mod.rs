@@ -1,29 +1,34 @@
 mod concat;
+mod conditional;
 mod identifier;
 mod resolut;
 mod variable;
+
+pub use concat::*;
+pub use conditional::*;
+pub use identifier::*;
+pub use resolut::*;
+pub use variable::*;
 
 use std::fmt::Display;
 
 pub use nophp_derive::Module;
 
-pub use concat::*;
-pub use identifier::*;
-pub use resolut::*;
-pub use variable::*;
 
 use serde_json::{Map, Value};
 pub use Value::Object as AstMap;
 pub use Value::String as AstStr;
+pub use Value::Array as AstArr;
 
 use crate::compiler::Compiler;
 use crate::compiler::ScopeBuffer;
 pub use crate::prelude::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NpType {
     String(String),
-    Null,
+    Number(i64),
+    //Null, // source of evil
 }
 
 impl NpType {
@@ -32,6 +37,12 @@ impl NpType {
             "STRING" => {
                 let value = var_value.as_str().ok_or(NoPhpError::ValueParseError)?;
                 Ok(Self::String(value.into()))
+            }
+            "INT" => {
+                let value = var_value.as_str().ok_or(NoPhpError::ValueParseError)?;
+                // TODO: Fix the serialisation in the lexer module
+                let value = value.parse::<i64>().map_err(|_| NoPhpError::ValueParseError)?;
+                Ok(Self::Number(value.into()))
             }
             _ => todo!("Type {var_type} is not yet implimented"),
         }
@@ -45,7 +56,8 @@ impl Display for NpType {
                 let value = value.replace("\\n", "\n");
                 write!(f, "{value}")
             }
-            Self::Null => write!(f, "null"),
+            Self::Number(value) => write!(f, "{value}"),
+            //Self::Null => write!(f, "nuh uh"),
         }
     }
 }

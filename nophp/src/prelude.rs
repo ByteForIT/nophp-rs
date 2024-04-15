@@ -13,6 +13,8 @@ pub enum NoPhpError {
     MalformedAST,
     #[error("[ERR] Cannot parse a value into a NoPHP Type")]
     ValueParseError,
+    #[error("[ERR] Equality operation {0} is not defined")]
+    InvalidEqOp(String),
     #[error("[ERR:PYTHON] {0}")]
     PyErr(#[from] pyo3::PyErr),
 

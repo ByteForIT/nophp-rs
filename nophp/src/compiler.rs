@@ -72,10 +72,12 @@ impl<'a, 'b> Compiler<'a, 'b> {
     fn parse_module(&self, value: &Vec<Value>) -> Result<Box<dyn Module>> {
         match (value.get(0), value.get(1)) {
             (Some(AstStr(id)), Some(AstMap(value))) => match id.as_str() {
+                // TODO: Fix clone maddness
                 "PHP" => Ok(Box::new(Php::try_new(value.clone())?)),
                 "FUNCTION_CALL" => Ok(Box::new(FunctionCall::try_new(value.clone())?)),
                 "CONCAT" => Ok(Box::new(ConcatMod::try_new(value.clone())?)),
                 "VARIABLE_ASSIGNMENT" => Ok(Box::new(VariableAssignment::try_new(value.clone())?)),
+                "CONDITIONAL" => Ok(Box::new(Conditional::try_new(value)?)),
                 // Identifiers (for variables for example)
                 "ID" => Ok(Box::new(Identifier::try_new(value.clone())?)),
                 // NoPHP Types

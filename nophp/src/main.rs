@@ -17,13 +17,13 @@ fn main() -> Result<()> {
 
     let ast = lex_one(include_str!("../../nophp.php")).unwrap();
 
-    let mut buffer = String::new();
-    let mut scope_vars = HashMap::new();
-    let mut compiler = Compiler::new(&mut buffer, &mut scope_vars);
-
     let ast = ast
         .as_array()
         .expect("Malformed AST Returned (AST does not start with an array)");
+
+    let mut buffer = String::new();
+    let mut scope_vars = HashMap::new();
+    let mut compiler = Compiler::new(&mut buffer, &mut scope_vars);
 
     compiler.execute(ast);
     compiler.run();

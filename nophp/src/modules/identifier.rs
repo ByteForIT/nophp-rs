@@ -19,8 +19,8 @@ impl ModuleImpl for Identifier {
 
     fn eval(&self, _buffer: &mut String, scope: &mut ScopeBuffer) -> Option<NpType> {
         let value = scope.variables.get(&self.id);
-        let value = value.unwrap_or(&NpType::Null);
-        Some(value.clone())
+        value.cloned()
+        // let value = value.unwrap_or(&NpType::Null);
+        // Some(value.clone())
     }
-
 }
