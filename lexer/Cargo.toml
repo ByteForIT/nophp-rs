@@ -1,0 +1,12 @@
+[package]
+name = "lexer"
+version = "0.1.0"
+edition = "2021"
+# this is where I will isloate all the lexer code
+# what comes out of this will be a very standardised
+# interface. This is to stop the problem of unwraping
+# every line when using serde_json::Value
+
+[dependencies]
+pyo3 = { version = "0.21.1", features = ["auto-initialize"] }
+pythonize = "0.21.1"

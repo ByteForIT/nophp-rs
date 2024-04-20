@@ -42,7 +42,7 @@ impl NpType {
                 let value = var_value.as_str().ok_or(NoPhpError::ValueParseError)?;
                 // TODO: Fix the serialisation in the lexer module
                 let value = value.parse::<i64>().map_err(|_| NoPhpError::ValueParseError)?;
-                Ok(Self::Number(value.into()))
+                Ok(Self::Number(value))
             }
             _ => todo!("Type {var_type} is not yet implimented"),
         }

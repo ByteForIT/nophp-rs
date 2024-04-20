@@ -5,5 +5,5 @@ opt-level = 3
 opt-level = 3
 
 [workspace]
-members = ["nophp", "macros", "server"]
+members = ["nophp", "macros", "server", "lexer"]
 resolver = "2"
