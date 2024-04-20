@@ -102,8 +102,8 @@ impl ModuleImpl for Php {
 
         let ast = &self.data;
 
-        let mut scope_vars = &mut scope.variables;
-        let mut compiler = Compiler::new(buffer, &mut scope_vars);
+        let scope_vars = &mut scope.variables;
+        let mut compiler = Compiler::new(buffer, scope_vars);
 
         compiler.execute(ast);
         compiler.run();
@@ -154,8 +154,8 @@ impl ModuleImpl for FunctionCall {
     fn proc_tree(&self, buffer: &mut String, scope: &mut ScopeBuffer) {
         let ast = &self.arguments;
 
-        let mut scope_vars = &mut scope.variables;
-        let mut compiler = Compiler::new(buffer, &mut scope_vars);
+        let scope_vars = &mut scope.variables;
+        let mut compiler = Compiler::new(buffer, scope_vars);
 
         compiler.execute(ast);
 

@@ -28,7 +28,7 @@ pub fn lex_one(file: &str) -> Result<Value> {
 }
 
 #[allow(unused)]
-pub fn lex_many(files: &Vec<String>) -> Result<Vec<Value>> {
+pub fn lex_many(files: &[String]) -> Result<Vec<Value>> {
     let ast = Python::with_gil(|py| -> PyResult<Vec<Value>> {
         let (lexer, parser) = get_funcs(py)?;
         let ast = files
@@ -42,7 +42,7 @@ pub fn lex_many(files: &Vec<String>) -> Result<Vec<Value>> {
     Ok(ast)
 }
 
-fn get_funcs<'a>(py: Python<'a>) -> PyResult<(Bound<'a, PyAny>, Bound<'a, PyAny>)> {
+fn get_funcs(py: Python<'_>) -> PyResult<(Bound<'_, PyAny>, Bound<'_, PyAny>)> {
     let lexer = PyModule::from_code_bound(py, LEXER, "nophp.lexer.py", "nophp.lexer")?;
     let parser = PyModule::from_code_bound(py, PARSER, "nophp.parser.py", "nophp.parser")?;
 

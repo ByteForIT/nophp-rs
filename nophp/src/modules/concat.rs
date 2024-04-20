@@ -22,19 +22,19 @@ impl ModuleImpl for ConcatMod {
         match (val.get("0"), val.get("1")) {
             (Some(first), Some(second)) => {
                 // TODO Make scopes slightly global
-                let mut scope_vars = &mut scope.variables;
-                let mut compiler = Compiler::new(buffer, &mut scope_vars);
+                let scope_vars = &mut scope.variables;
+                let mut compiler = Compiler::new(buffer, scope_vars);
                 compiler.execute(&vec![first.clone()]);
                 let eval = &compiler.eval();
                 let first = eval.get(0).unwrap();
 
-                let mut scope_vars = &mut scope.variables;
-                let mut compiler = Compiler::new(buffer, &mut scope_vars);
+                let scope_vars = &mut scope.variables;
+                let mut compiler = Compiler::new(buffer, scope_vars);
                 compiler.execute(&vec![second.clone()]);
                 let eval = &compiler.eval();
                 let second = eval.get(0).unwrap();
 
-                Some(NpType::String(f!("{first}{second}").into()))
+                Some(NpType::String(f!("{first}{second}")))
             }
             _ => panic!("Malformed AST"),
         }

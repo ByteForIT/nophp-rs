@@ -42,7 +42,7 @@ impl<'a, 'b> Compiler<'a, 'b> {
     pub fn execute(&mut self, ast: &Vec<Value>) {
         for action in ast {
             if let Value::Array(code) = action {
-                let module = self.parse_module(&code).unwrap();
+                let module = self.parse_module(code).unwrap();
                 self.add_module(module);
             }
         }
@@ -50,7 +50,7 @@ impl<'a, 'b> Compiler<'a, 'b> {
 
     pub fn run(&mut self) {
         self.modules.0.iter().for_each(|module| {
-            module.proc_tree(&mut self.buffer, &mut self.scope);
+            module.proc_tree(self.buffer, &mut self.scope);
         });
     }
 
@@ -59,7 +59,7 @@ impl<'a, 'b> Compiler<'a, 'b> {
             .modules
             .0
             .iter()
-            .filter_map(|module| module.eval(&mut self.buffer, &mut self.scope))
+            .filter_map(|module| module.eval(self.buffer, &mut self.scope))
             .collect();
 
         values
@@ -69,7 +69,7 @@ impl<'a, 'b> Compiler<'a, 'b> {
         self.buffer.clone()
     }
 
-    fn parse_module(&self, value: &Vec<Value>) -> Result<Box<dyn Module>> {
+    fn parse_module(&self, value: &[Value]) -> Result<Box<dyn Module>> {
         match (value.get(0), value.get(1)) {
             (Some(AstStr(id)), Some(AstMap(value))) => match id.as_str() {
                 // TODO: Fix clone maddness

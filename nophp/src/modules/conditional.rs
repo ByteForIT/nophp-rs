@@ -63,7 +63,7 @@ impl Conditional {
         }
     }
 
-    fn qualify_side(&self, value: &Vec<Value>, scope: &HashMap<String, NpType>) -> Option<NpType> {
+    fn qualify_side(&self, value: &[Value], scope: &HashMap<String, NpType>) -> Option<NpType> {
         match (value.get(0), value.get(1)) {
             (Some(AstStr(id)), Some(AstMap(value))) => {
                 let value = value.get("VALUE")?;
@@ -81,7 +81,7 @@ impl Conditional {
         }
     }
 
-    fn get_code_and_cond(code: &Vec<Value>) -> Option<(&Vec<Value>, &Vec<Value>)> {
+    fn get_code_and_cond(code: &[Value]) -> Option<(&Vec<Value>, &Vec<Value>)> {
         let value = code.get(1)?.as_object()?;
 
         let code = value.get("CODE")?.as_array()?;
@@ -96,20 +96,17 @@ impl ModuleImpl for Conditional {
         let lhs = self.qualify_side(&self.a, scope.variables);
         let rhs = self.qualify_side(&self.b, scope.variables);
 
-        match (lhs, rhs) {
-            (Some(lhs), Some(rhs)) => {
-                let eq = self.op.compare(lhs, rhs);
+        if let (Some(lhs), Some(rhs)) = (lhs, rhs) {
+            let eq = self.op.compare(lhs, rhs);
 
-                if eq {
-                    let mut scope_vars = &mut scope.variables;
-                    let mut compiler = Compiler::new(buffer, &mut scope_vars);
+            if eq {
+                let scope_vars = &mut scope.variables;
+                let mut compiler = Compiler::new(buffer, scope_vars);
 
-                    compiler.execute(&self.code);
-                    compiler.run();
-                }
-
+                compiler.execute(&self.code);
+                compiler.run();
             }
-            _ => {}
+
         };
     }
 }

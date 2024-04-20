@@ -23,7 +23,7 @@ async fn handler(
     let uri = req.uri();
     println!("[{} {}]", req.method(), uri);
 
-    let file = uri.path().trim_start_matches("/");
+    let file = uri.path().trim_start_matches('/');
 
     let ast = project.get(file);
 
@@ -73,7 +73,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let read_files: Vec<_> = files
         .iter()
-        .filter_map(|path| fs::read_to_string(&path).ok())
+        .filter_map(|path| fs::read_to_string(path).ok())
         .collect();
 
     println!("[SERVER] Found {} php files", files.len());
@@ -82,8 +82,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let files_map: HashMap<_, _> = files
         .iter()
-        .map(|f| f.trim_start_matches("."))
-        .map(|f| f.trim_start_matches("/"))
+        .map(|f| f.trim_start_matches('.'))
+        .map(|f| f.trim_start_matches('/'))
         .map(|f| f.to_string())
         .zip(ast_list.into_iter())
         .collect();

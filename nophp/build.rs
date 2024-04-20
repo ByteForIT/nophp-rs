@@ -2,7 +2,7 @@ fn get_file(url: &str, name: &str) {
     let out = std::env::var("OUT_DIR").unwrap();
     let path = std::path::Path::new(&out).join(name);
     let mut resp = reqwest::blocking::get(url).unwrap();
-    let mut file = std::fs::File::create(&path).unwrap();
+    let mut file = std::fs::File::create(path).unwrap();
     std::io::copy(&mut resp, &mut file).unwrap();
 }
 

@@ -6,10 +6,10 @@ pub struct ResolutMod {
 }
 
 impl ResolutMod {
-    pub fn try_new(id: &String, value: Map<String, Value>) -> Result<Self> {
+    pub fn try_new(id: &str, value: Map<String, Value>) -> Result<Self> {
         let value = value.get("VALUE").expect("Malformed AST").to_owned();
 
-        match (id.as_str(), value) {
+        match (id, value) {
             ("STRING", AstStr(value)) => Ok(Self {
                 np_type: NpType::String(value),
             }),
@@ -24,6 +24,6 @@ impl ModuleImpl for ResolutMod {
     }
 
     fn eval(&self, _buffer: &mut String, _scope: &mut ScopeBuffer) -> Option<NpType> {
-        return Some(self.np_type.clone());
+        Some(self.np_type.clone())
     }
 }
