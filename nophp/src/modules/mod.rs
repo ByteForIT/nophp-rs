@@ -7,6 +7,7 @@ mod variable;
 pub use concat::*;
 pub use conditional::*;
 pub use identifier::*;
+use log::info;
 pub use resolut::*;
 pub use variable::*;
 
@@ -98,7 +99,7 @@ impl Php {
 
 impl ModuleImpl for Php {
     fn proc_tree(&self, buffer: &mut String, scope: &mut ScopeBuffer) {
-        println!("[PHP] triggered SP (single page) build");
+        info!("[PHP] triggered SP (single page) build");
 
         let ast = &self.data;
 

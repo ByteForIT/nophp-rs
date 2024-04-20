@@ -1,5 +1,8 @@
 use std::collections::HashMap;
 
+#[allow(unused)]
+use log::*;
+
 use crate::prelude::*;
 use pyo3::prelude::*;
 use pythonize::depythonize_bound;
@@ -20,6 +23,7 @@ const PARSER: &str = c!(
 
 pub fn lex_one(file: &str) -> Result<Value> {
     let ast = Python::with_gil(|py| -> PyResult<Value> {
+        info!("acquired python gil... proceeding to lex and parse");
         let (lexer, parser) = get_funcs(py)?;
         let ast = lex(&lexer, &parser, file)?;
         Ok(ast)
@@ -30,6 +34,7 @@ pub fn lex_one(file: &str) -> Result<Value> {
 #[allow(unused)]
 pub fn lex_many(files: &[String]) -> Result<Vec<Value>> {
     let ast = Python::with_gil(|py| -> PyResult<Vec<Value>> {
+        info!("acquired python gil... proceeding to lex and parse");
         let (lexer, parser) = get_funcs(py)?;
         let ast = files
             .iter()

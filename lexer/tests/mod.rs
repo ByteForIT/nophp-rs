@@ -1,6 +1,9 @@
-use lexer::add;
+use lexer::*;
 
 #[test]
-fn it_works() {
-    assert_eq!(add(1, 1), 2)
+fn current_spec_valid() {
+    let file = include_str!("nophp.php");
+    let files = &[file];
+    let lexer = Lexer::new(files);
+    lexer.parse().unwrap();
 }

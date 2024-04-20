@@ -1,6 +1,7 @@
 mod compiler;
-mod lexer;
 mod modules;
+
+#[allow(unused)]
 mod prelude;
 
 #[cfg(test)]
@@ -10,14 +11,17 @@ use std::collections::HashMap;
 
 use crate::prelude::*;
 use compiler::Compiler;
-use lexer::lex_one;
+use lexer::Lexer;
 
 fn main() -> Result<()> {
     color_eyre::install().unwrap();
+    env_logger::init();
 
-    let ast = lex_one(include_str!("../../nophp.php")).unwrap();
+    let files = vec![include_str!("../../nophp.php").to_string()];
+    let lexer = Lexer::new(&files);
+    let ast = lexer.parse().expect("Error parsing the file");
 
-    let ast = ast
+    let ast = ast[0]
         .as_array()
         .expect("Malformed AST Returned (AST does not start with an array)");
 

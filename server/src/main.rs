@@ -11,7 +11,7 @@ use http_body_util::Full;
 use hyper::StatusCode;
 use hyper::{body::Bytes, server::conn::http1, service::service_fn, Request, Response};
 use hyper_util::rt::TokioIo;
-use nophp::lexer::{lex_many, Project};
+use lexer::{Lexer, Project};
 use tokio::net::TcpListener;
 
 use nophp::compiler::Compiler;
@@ -78,7 +78,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     println!("[SERVER] Found {} php files", files.len());
 
-    let ast_list = lex_many(&read_files)?;
+    let lexer = Lexer::new(&read_files);
+    let ast_list = lexer.parse()?;
 
     let files_map: HashMap<_, _> = files
         .iter()
