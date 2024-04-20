@@ -12,6 +12,7 @@ use hyper::StatusCode;
 use hyper::{body::Bytes, server::conn::http1, service::service_fn, Request, Response};
 use hyper_util::rt::TokioIo;
 use lexer::{Lexer, Project};
+use log::{debug, info};
 use tokio::net::TcpListener;
 
 use nophp::compiler::Compiler;
@@ -21,8 +22,6 @@ async fn handler(
     project: Arc<Project>,
 ) -> hyper::Result<Response<Full<Bytes>>> {
     let uri = req.uri();
-    println!("[{} {}]", req.method(), uri);
-
     let file = uri.path().trim_start_matches('/');
 
     let ast = project.get(file);
@@ -35,11 +34,13 @@ async fn handler(
             let ast = ast.as_array().unwrap(); // FIXME
             compiler.execute(ast);
             compiler.run();
+            info!("[{} {} 200]", req.method(), uri);
             Ok(Response::new(Full::new(Bytes::from(buffer))))
         }
         None => {
             let mut err = Response::new(Full::new(Bytes::from("404 Not Found")));
             *err.status_mut() = StatusCode::NOT_FOUND;
+            info!("[{} {} 404]", req.method(), uri);
             Ok(err)
         }
     }
@@ -55,6 +56,8 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    env_logger::init();
+
     let args = Args::parse();
 
     let path = PathBuf::from(args.dir);
@@ -76,7 +79,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .filter_map(|path| fs::read_to_string(path).ok())
         .collect();
 
-    println!("[SERVER] Found {} php files", files.len());
+    debug!("[SERVER] Found {} php files", files.len());
 
     let lexer = Lexer::new(&read_files);
     let ast_list = lexer.parse()?;
@@ -89,7 +92,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .zip(ast_list.into_iter())
         .collect();
 
-    println!("[SERVER] Parsed {} php files", files_map.len());
+    debug!("[SERVER] Parsed {} php files", files_map.len());
 
     // use reference counting
     let files_map = Arc::new(files_map);
@@ -97,7 +100,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let addr = SocketAddr::from(([127, 0, 0, 1], args.port));
     let listener = TcpListener::bind(addr).await?;
 
-    println!("Listening on {}", addr);
+    info!("Listening on {}", addr);
 
     loop {
         let (stream, _) = listener.accept().await?;
