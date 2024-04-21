@@ -8,6 +8,7 @@ use std::sync::Arc;
 use clap::builder::OsStr;
 use clap::Parser;
 use http_body_util::Full;
+use hyper::header::HeaderValue;
 use hyper::StatusCode;
 use hyper::{body::Bytes, server::conn::http1, service::service_fn, Request, Response};
 use hyper_util::rt::TokioIo;
@@ -35,7 +36,9 @@ async fn handler(
             compiler.execute(ast);
             compiler.run();
             info!("[{} {} 200]", req.method(), uri);
-            Ok(Response::new(Full::new(Bytes::from(buffer))))
+            let mut resp = Response::new(Full::new(Bytes::from(buffer)));
+            resp.headers_mut().append("Content-Type", HeaderValue::from_str("text/html").unwrap());
+            Ok(resp)
         }
         None => {
             let mut err = Response::new(Full::new(Bytes::from("404 Not Found")));
