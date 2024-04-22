@@ -1,3 +1,7 @@
+mod lexer;
+
+pub use lexer::*;
+
 use std::collections::HashMap;
 
 use log::info;

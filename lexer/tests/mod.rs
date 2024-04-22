@@ -1,9 +1,19 @@
+#![allow(unused)]
+
 use lexer::*;
 
-#[test]
-fn current_spec_valid() {
+use pest::Parser;
+
+//#[test]
+fn parser_py() {
     let file = include_str!("nophp.php");
-    let files = &[file];
-    let lexer = Lexer::new(files);
+    let files = vec![file.to_string()];
+    let lexer = Lexer::new(&files);
     lexer.parse().unwrap();
+}
+
+#[test]
+fn parse_pest() {
+    let file = include_str!("nophp.php");
+    let parsed_file = NoPhpParser::parse(Rule::php, file).unwrap();
 }

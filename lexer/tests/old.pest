@@ -1,0 +1,8 @@
+alpha = { 'a'..'z' | 'A'..'Z' }
+digit = { '0'..'9' }
+
+ident = { (alpha|digit)+ }
+
+ignore = _{ (WHITE_SPACE |"\n")* }
+
+assignment = { "$"~ident~ignore~"="~ignore~ident~ignore~";" }

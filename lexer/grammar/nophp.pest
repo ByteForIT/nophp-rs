@@ -1,0 +1,32 @@
+WHITESPACE = _{ " " | "\n" }
+
+digit = { '0'..'9' }
+alpha = { 'a'..'z' | 'A'..'Z' }
+
+ident = @{ alpha ~ (digit | alpha)+ }
+
+phpstart = { "<?php" | "<?" }
+phpend   = { "?>" | "" }
+
+string = @{ (digit | alpha)* }
+number = @{ (digit)+ }
+
+types = _{
+    ("'" ~ string ~ "'")
+  | ("\"" ~ string ~ "\"")
+  | number
+  | ("$" ~ ident)
+}
+
+assignment = { "$" ~ ident ~ "=" ~ types ~ ";" }
+
+echo = { "echo" ~ types ~ ";" }
+
+code = _{
+    assignment
+  | echo
+}
+
+php_code = {
+    phpstart ~ (code)* ~ phpend
+}
